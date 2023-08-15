@@ -2,7 +2,6 @@ import { Product } from '@/app/components/Product'
 import { RelatedProducts } from '@/app/components/RelatedProducts'
 import { storefront } from '@/app/services/storefront'
 import { formatDate, formatPrice } from '@/app/utils/formatting'
-import { GetStaticPaths } from 'next'
 
 const gql = String.raw
 
@@ -158,35 +157,4 @@ export default async function SingleProduct({ params }: ProductData) {
       <RelatedProducts relatedProducts={relatedProductsFormatted} />
     </main>
   )
-}
-
-interface GetProductsHandleResponse {
-  products: {
-    edges: {
-      node: {
-        handle: string
-      }
-    }[]
-  }
-}
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const { data }: { data: GetProductsHandleResponse } = await storefront(gql`
-    {
-      products(first: 6) {
-        edges {
-          node {
-            handle
-          }
-        }
-      }
-    }
-  `)
-
-  return {
-    paths: data.products.edges.map((product) => ({
-      params: { handle: product.node.handle },
-    })),
-    fallback: false,
-  }
 }
